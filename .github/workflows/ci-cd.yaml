@@ -1,0 +1,40 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build_and_push-to-yandex:
+    name: Build Docker Image and push to YC
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag cr.yandex/${{secrets.YC_REGISTRY_ID}}/author-service:latest
+    
+    - name: Login to YC Registry
+      uses: docker/login-action@v3.0.0 
+      with:
+        registry: cr.yandex
+        username: json_key
+        password: ${{secrets.YC_KEYS}}
+ 
+    - name: Push tag to YC Registry
+      run: docker push cr.yandex/${{secrets.YC_REGISTRY_ID}}/author-service:latest
+  deploy_in_yandex:
+      name: Deploy container
+      runs-on: ubuntu-latest
+      needs: [build_and_push-to-yandex]
+      steps:
+      - name: Deploy serverless container
+        uses: yc-actions/yc-sls-container-deploy@v1
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_KEYS }}
+          container-name: ${{ secrets.YC_CONTAINER_NAME }}
+          folder-id: ${{ secrets.YC_FOLDER_ID }}
+          revision-image-url: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/author-service:latest
+          revision-service-account-id: ${{ secrets.YC_SA_ID }}
