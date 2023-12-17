@@ -24,7 +24,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python3 /code/app/test*.py
+          python3 /code/app/test_components.py
 
   build_and_push:
     name: Build Docker Image and push to YC
