@@ -18,7 +18,7 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pip
           pip install -r requirements.txt
-          docker build . --file Dockerfile --tag ${{secrets.YC_REGISTRY_ID}}/users-service:latest
+          docker build . --file Dockerfile --tag ${{secrets.YC_REGISTRY_ID}}/author-service:latest
           docker run -p 80:80 -d ${{secrets.YC_REGISTRY_ID}}/users-service:latest
           sleep 5
 
