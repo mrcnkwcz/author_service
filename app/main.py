@@ -16,6 +16,10 @@ def all_authors():
 @app.get("/{author_id}")
 def read_item(author_id: int):
     try:
-        return authors[author_id]
+        return authors[author_id-1]
     except IndexError:
         return "Author not found"
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, host='0.0.0.0', port=80)
