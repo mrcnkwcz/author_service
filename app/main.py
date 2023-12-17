@@ -10,12 +10,12 @@ authors = [
 ]
 
 @app.get("/")
-def all_authors():
+def get_all_authors():
     return authors
 
 
 @app.get("/{author_id}")
-def read_item(author_id: int):
+def get_author_by_id(author_id: int):
     try:
         return authors[author_id-1]
     except IndexError:
@@ -24,4 +24,8 @@ def read_item(author_id: int):
 if __name__ == '__main__':
     import uvicorn
     import os
-    uvicorn.run(app, host='0.0.0.0', port=int(os.environ['PORT']))
+    try:
+        PORT = int(os.environ['PORT'])
+    except KeyError as keyerr:
+        PORT = 80
+    uvicorn.run(app, host='0.0.0.0', port=PORT)
